@@ -6,6 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+
 # Cortex support
 cortex-m = "0.7.3"
 cortex-m-rt = "0.7.0"
@@ -24,5 +25,25 @@ usb-device= "0.2.8"
 usbd-serial = "0.1.1"
 usbd-hid = "0.5.1"
 
+# Queue
+# bbqueue = "0.5.1" # Not ready yet for this arch atomic.fetch_add(val, order) method not found in `&AtomicUsize`
+
+# Heapless libraries
+heapless = { version = "0.7.10", features = ["serde"] }
+
+# Serde without std + json core
+serde = { version = "1.0", default-features = false, features = ["derive"] }
+serde-json-core = "0.4.0"
+
+# To convert integer
+numtoa = "0.2.4"
+
+#
+arrayvec = { version = "0.7.2", default-features = false }
+
+# To provide base64 algo
+base64 = { version = "0.13.0", default-features = false }
+
 [features]
 boot2 = ["rp2040-boot2"]
+
