@@ -6,3 +6,23 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+# Cortex support
+cortex-m = "0.7.3"
+cortex-m-rt = "0.7.0"
+
+# Rp pico support
+rp2040-boot2 = { version = "0.2.0", optional = true }
+rp2040-hal = "0.4.0"
+rp-pico = "0.3.0"
+
+# Embedded libs
+embedded-time = "0.12.0"
+embedded-hal = { version = "0.2.5", features=["unproven"] }
+
+# Usb support
+usb-device= "0.2.8"
+usbd-serial = "0.1.1"
+usbd-hid = "0.5.1"
+
+[features]
+boot2 = ["rp2040-boot2"]
