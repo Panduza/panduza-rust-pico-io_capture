@@ -15,6 +15,7 @@ pub const SIZE_ANS_BUFFER: usize = 400;
 
 // ============================================================================
 
+use hal::gpio::DynPin;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Debug)]
@@ -73,7 +74,7 @@ pub struct PicohaIo {
     delay: cortex_m::delay::Delay,
 
     /// Objects to control io of the board
-    dyn_ios: [Pin<PinId::DYN, FloatingInput>; NB_IO_RP2040],
+    dyn_ios: [DynPin; 26],
 
     /// The USB Device Driver (shared with the interrupt).
     usb_device: &'static mut UsbDevice<'static, hal::usb::UsbBus>,
@@ -97,7 +98,7 @@ impl PicohaIo {
     /// Application intialization
     pub fn new(
         delay: cortex_m::delay::Delay,
-        dyn_ios: [Pin; NB_IO_RP2040],
+        dyn_ios: [DynPin; 26],
         usb_dev: &'static mut UsbDevice<'static, hal::usb::UsbBus>,
         usb_ser: &'static mut SerialPort<'static, hal::usb::UsbBus>,
     ) -> Self {
@@ -165,119 +166,6 @@ impl PicohaIo {
     }
 
     // ------------------------------------------------------------------------
-
-    /// To write a value on the io
-    ///
-    fn process_write_io(&mut self, cmd: &Command) {
-        // Get io from cmd
-        let io = &mut self.dyn_ios[cmd.pin];
-
-        // error flag
-        let mut error: bool = false;
-
-        // Process the argument
-        match cmd.arg {
-            0 => {
-                io.set_low().unwrap();
-            }
-            1 => {
-                io.set_high().unwrap();
-            }
-            default => {
-                error = true;
-                let mut num = [0u8; 20];
-                let mut txt = ArrayString::<100>::new();
-                txt.push_str("Unknown arg value for write command (");
-                txt.push_str(default.numtoa_str(10, &mut num));
-                txt.push_str(")");
-                self.send_answer(&Answer{ sts: AnsStatus::Error as u8, pin: 0, arg: 0, msg: &txt });
-            }
-        }
-
-        // Send ack
-        if !error
-        {
-            self.send_answer(&Answer{ sts: AnsStatus::Ok as u8, pin: 0, arg: 0, msg: "" });
-        }
-    }
-
-    // ------------------------------------------------------------------------
-
-    /// To read an io
-    ///
-    fn process_read_io(&mut self, cmd: &Command) {
-        // Get io from cmd
-
-        // if(io.is_high().unwrap()) {
-
-        // } else {
-
-        // }
-    }
-
-    // ------------------------------------------------------------------------
-
-    /// Main loop of the main task of the application
-    ///
-    pub fn run_forever(&mut self) -> ! {
-        let mut cmd_buffer = [0u8; 1024];
-
-        loop {
-
-            match self.usb_buffer.get_command(&mut cmd_buffer) {
-                None => {}
-                Some(cmd_end_index) => {
-                    let cmd_slice_ref = &cmd_buffer[0..cmd_end_index];
-
-                    match serde_json_core::de::from_slice::<Command>(cmd_slice_ref) {
-
-                        // Process parsing error
-                        Err(_e) => {
-                            self.send_answer(&Answer {
-                                sts: AnsStatus::Error as u8,
-                                pin: 0,
-                                arg: 0,
-                                msg: "error parsing command",
-                            });
-                        }
-
-                        Ok(cmd) => {
-                            let data = &cmd.0;
-                            match data.cod {
-                                0 => {
-                                    self.process_set_io_mode(data);
-                                }
-
-                                1 => {
-                                    self.process_write_io(data);
-                                }
-
-                                2 => {
-                                    self.process_read_io(data);
-                                }
-
-                                10 => {
-                                    // version maj.min
-                                    // pin = v-maj
-                                    // arg = v-min
-                                    self.send_answer(&Answer{ sts: AnsStatus::Ok as u8, pin: 0, arg: 1, msg: "" });
-                                }
-
-                                default => {
-                                    let mut num = [0u8; 20];
-                                    let mut txt = ArrayString::<100>::new();
-                                    txt.push_str("Unknown arg value for command (");
-                                    txt.push_str(default.numtoa_str(10, &mut num));
-                                    txt.push_str(")");
-                                    self.send_answer(&Answer{ sts: AnsStatus::Error as u8, pin: 0, arg: 0, msg: &txt });
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 
      /// Panic handler implementation for the application
      pub fn panic_handler(&mut self, _info: &PanicInfo) -> ! {
