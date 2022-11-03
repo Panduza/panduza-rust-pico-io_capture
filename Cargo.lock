@@ -48,12 +48,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f8fe8f5a8a398345e52358e18ff07cc17a568fbca5c6f73873d3a62056309603"
 
 [[package]]
-name = "base64"
-version = "0.13.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
-
-[[package]]
 name = "bit_field"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -85,7 +79,6 @@ checksum = "70858629a458fdfd39f9675c4dc309411f2a3f83bede76988d81bf1a0ecee9e0"
 dependencies = [
  "bare-metal 0.2.5",
  "bitfield",
- "critical-section 1.1.1",
  "embedded-hal",
  "volatile-register",
 ]
@@ -175,6 +168,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a357d28ed41a50f9c765dbfe56cbc04a64e53e5fc58ba79fbc34c10ef3df831f"
 
 [[package]]
+name = "fugit"
+version = "0.3.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7ab17bb279def6720d058cb6c052249938e7f99260ab534879281a95367a87e5"
+dependencies = [
+ "gcd",
+]
+
+[[package]]
+name = "gcd"
+version = "2.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f37978dab2ca789938a83b2f8bc1ef32db6633af9051a6cd409eff72cbaaa79a"
+dependencies = [
+ "paste",
+]
+
+[[package]]
 name = "hash32"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -192,7 +203,6 @@ dependencies = [
  "atomic-polyfill",
  "hash32",
  "rustc_version 0.4.0",
- "serde",
  "spin",
  "stable_deref_trait",
 ]
@@ -327,32 +337,29 @@ dependencies = [
 ]
 
 [[package]]
-name = "numtoa"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6aa2c4e539b869820a2b82e1aef6ff40aa85e65decdd5185e83fb4b1249cd00f"
-
-[[package]]
 name = "panduza-rust-pico-io_capture"
 version = "0.1.0"
 dependencies = [
- "arrayvec",
- "base64",
  "cortex-m",
  "cortex-m-rt",
  "critical-section 1.1.1",
  "embedded-hal",
  "embedded-time",
+ "fugit",
  "heapless",
- "numtoa",
+ "panic-halt",
  "rp-pico",
  "rp2040-boot2",
- "serde",
- "serde-json-core",
  "usb-device",
  "usbd-hid",
  "usbd-serial",
 ]
+
+[[package]]
+name = "panic-halt"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "de96540e0ebde571dc55c73d60ef407c653844e6f9a1e2fdbd40c07b9252d812"
 
 [[package]]
 name = "paste"
@@ -435,18 +442,16 @@ dependencies = [
 
 [[package]]
 name = "rp-pico"
-version = "0.3.0"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0448eedbea7c5af834a7270fab470f7a815777e3ac09be135fb3f06afd163e7b"
+checksum = "15eec35d047d5ac3f9bc12686687e404f587acce23f76b6af04c0e0ce270a0b5"
 dependencies = [
  "cortex-m",
  "cortex-m-rt",
- "embedded-time",
+ "fugit",
  "rp2040-boot2",
  "rp2040-hal",
  "usb-device",
- "usbd-hid",
- "usbd-serial",
 ]
 
 [[package]]
@@ -460,23 +465,38 @@ dependencies = [
 
 [[package]]
 name = "rp2040-hal"
-version = "0.4.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e4bca865e0a5a0aba04992ede50d7585f3dba13863943445b5ad1c81270e112e"
+checksum = "2f919d0d3c64fd9c7642dac2267a55d6aa1667e45329e8605a3858727acc7711"
 dependencies = [
  "cortex-m",
+ "cortex-m-rt",
  "critical-section 0.2.7",
+ "critical-section 1.1.1",
  "embedded-hal",
- "embedded-time",
+ "fugit",
  "itertools",
  "nb 1.0.0",
  "paste",
  "pio",
  "rand_core",
+ "rp2040-hal-macros",
  "rp2040-pac",
  "usb-device",
  "vcell",
  "void",
+]
+
+[[package]]
+name = "rp2040-hal-macros"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "86479063e497efe1ae81995ef9071f54fd1c7427e04d6c5b84cde545ff672a5e"
+dependencies = [
+ "cortex-m-rt",
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -507,12 +527,6 @@ checksum = "bfa0f585226d2e68097d4f95d113b15b83a82e819ab25717ec0590d9584ef366"
 dependencies = [
  "semver 1.0.14",
 ]
-
-[[package]]
-name = "ryu"
-version = "1.0.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4501abdff3ae82a1c1b477a17252eb69cee9e66eb915c1abaa4f44d873df9f09"
 
 [[package]]
 name = "scopeguard"
@@ -546,31 +560,6 @@ name = "serde"
 version = "1.0.147"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d193d69bae983fc11a79df82342761dfbf28a99fc8d203dca4c3c1b590948965"
-dependencies = [
- "serde_derive",
-]
-
-[[package]]
-name = "serde-json-core"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8014aeea272bca0f0779778d43253f2f3375b414185b30e6ecc4d3e4a9994781"
-dependencies = [
- "heapless",
- "ryu",
- "serde",
-]
-
-[[package]]
-name = "serde_derive"
-version = "1.0.147"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f1d362ca8fc9c3e3a7484440752472d68a6caa98f1ab81d99b5dfe517cec852"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
 
 [[package]]
 name = "spin"
@@ -622,9 +611,9 @@ checksum = "1f6cc3adc849b5292b4075fc0d5fdcf2f24866e88e336dd27a8943090a520508"
 
 [[package]]
 name = "usbd-hid"
-version = "0.5.2"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "183b7e65bbd75512aedf250deda89394c74ae3118b79fe41f159e8503e1d5d7f"
+checksum = "28ab3359cb8ad713361abb84030f120d7350488d75949ad4bb39f53a1a8321dd"
 dependencies = [
  "serde",
  "ssmarshal",

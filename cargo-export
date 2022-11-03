@@ -1,0 +1,1 @@
+elf2uf2-rs target/thumbv6m-none-eabi/debug/panduza-rust-pico-io_capture panduza-rust-pico-io_capture.uf2
