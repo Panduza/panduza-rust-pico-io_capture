@@ -87,12 +87,9 @@ impl<'a> PicoSerial<'a>
 
     pub fn new(usb_bus: &'a UsbBusAllocator<hal::usb::UsbBus>) -> Self
     {
-        unsafe {
-            pac::NVIC::unmask(pac::Interrupt::USBCTRL_IRQ);
-        };
         Self {
             usb_serial: SerialPort::new(usb_bus),
-            usb_device: UsbDeviceBuilder::new(usb_bus, UsbVidPid(0x16c0, 0x27dd))
+            usb_device: UsbDeviceBuilder::new(usb_bus, UsbVidPid(0x16c0, 0x05e1))
                             .manufacturer("Fake company")
                             .product("Serial port")
                             .serial_number("TEST")
@@ -101,13 +98,25 @@ impl<'a> PicoSerial<'a>
         }
     }
 
+    pub fn enable_interrupt()
+    {
+        unsafe
+        {
+            pac::NVIC::unmask(pac::Interrupt::USBCTRL_IRQ);
+        };
+    }
+
     pub fn run(&mut self)
     {
-        let _ = self.usb_device.poll(&mut [&mut self.usb_serial]);
+        critical_section::with(|cs|{
+            let _ = self.usb_device.poll(&mut [&mut self.usb_serial]);
+        });
     }
 
     pub fn write(&mut self, s: &str)
     {
-        let _ = self.usb_serial.write(s.as_bytes());
+        critical_section::with(|cs|{
+            let _ = self.usb_serial.write(s.as_bytes());
+        });
     }
 }
