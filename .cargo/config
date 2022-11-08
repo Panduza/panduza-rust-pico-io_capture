@@ -40,3 +40,6 @@ runner = "elf2uf2-rs -d"
 # This runner will find a supported SWD debug probe and flash your RP2040 over
 # SWD:
 # runner = "probe-run --chip RP2040"
+
+[alias]
+deploy = ["elf2uf2-rs", "panduza-rust-pico-io_capture", "panduza-rust-pico-io_capture.uf2"]

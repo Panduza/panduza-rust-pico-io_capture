@@ -208,6 +208,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "irq"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5fde4043982dac20deb036c56edf2b1928614509334ee6c392f7d8caffa999a3"
+
+[[package]]
 name = "itertools"
 version = "0.10.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -353,6 +359,7 @@ dependencies = [
  "embedded-time",
  "fugit",
  "heapless",
+ "irq",
  "numtoa",
  "panic-halt",
  "rp-pico",
