@@ -1,17 +1,8 @@
-use embedded_time::clock;
-use rp_pico::pac::{Peripherals, CorePeripherals};
 // USB crates
-use usb_device::{class_prelude::*, prelude::*};
-use usbd_serial::SerialPort;
-
-
-use rp_pico::hal;
-
-use rp_pico::hal::Clock;
+use usb_device::class_prelude::*;
 
 use rp_pico::{
-    pac,
-    pac::NVIC,
+    pac::{Peripherals, CorePeripherals, NVIC},
     Pins,
     hal::{
         Watchdog,
@@ -19,6 +10,7 @@ use rp_pico::{
         clocks,
         usb,
         Timer,
+        Clock,
     }
 };
 
@@ -68,7 +60,7 @@ impl PicoBsp
             ));
 
             let delay = cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().to_Hz());
-            let timer = hal::Timer::new(pac.TIMER, &mut pac.RESETS);
+            let timer = Timer::new(pac.TIMER, &mut pac.RESETS);
 
             let nvic = core.NVIC;
             
